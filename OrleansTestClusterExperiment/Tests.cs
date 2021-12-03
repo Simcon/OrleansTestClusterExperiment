@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using Microsoft.Extensions.DependencyInjection;
+using NUnit.Framework;
 using Orleans;
 using Orleans.Hosting;
 using Orleans.TestingHost;
@@ -8,6 +9,7 @@ namespace OrleansTestClusterExperiment
     public class Tests
     {
         private TestCluster _cluster;
+        private IClusterClient _client;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
@@ -17,6 +19,7 @@ namespace OrleansTestClusterExperiment
                 .AddSiloBuilderConfigurator<TestClusterSiloBuilderConfigurator>()
                 .Build();
             _cluster.Deploy();
+            _client = _cluster.Client;
         }
 
         [OneTimeTearDown]
@@ -31,9 +34,9 @@ namespace OrleansTestClusterExperiment
             var id = Guid.NewGuid();
             var expected = "my title";
 
-            await _cluster.Client.GetGrain<ICardGrain>(id).SetTitle(expected);
+            await _client.GetGrain<ICardGrain>(id).SetTitle(expected);
             // GetTitle returns null when it should return "my title"
-            var actual = await _cluster.Client.GetGrain<ICardGrain>(id).GetTitle();
+            var actual = await _client.GetGrain<ICardGrain>(id).GetTitle();
 
             Assert.AreEqual(expected, actual);
         }
@@ -44,6 +47,8 @@ namespace OrleansTestClusterExperiment
         public void Configure(ISiloBuilder siloBuilder)
         {
             siloBuilder
+                .ConfigureServices(services =>
+                    services.AddTransient<ICardGrain, CardGrain>())
                 .UseLocalhostClustering()
                 .AddMemoryGrainStorageAsDefault();
         }
