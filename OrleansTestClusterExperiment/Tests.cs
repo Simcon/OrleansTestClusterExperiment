@@ -50,6 +50,7 @@ namespace OrleansTestClusterExperiment
                 .ConfigureServices(services =>
                     services.AddTransient<ICardGrain, CardGrain>())
                 .UseLocalhostClustering()
+                //.AddMemoryGrainStorage("ClusterStateStorage")
                 .AddMemoryGrainStorageAsDefault();
         }
     }
