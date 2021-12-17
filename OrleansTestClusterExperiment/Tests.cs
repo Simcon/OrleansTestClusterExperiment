@@ -35,7 +35,6 @@ namespace OrleansTestClusterExperiment
             var expected = "my title";
 
             await _client.GetGrain<ICardGrain>(id).SetTitle(expected);
-            // GetTitle returns null when it should return "my title"
             var actual = await _client.GetGrain<ICardGrain>(id).GetTitle();
 
             Assert.AreEqual(expected, actual);
@@ -49,8 +48,7 @@ namespace OrleansTestClusterExperiment
             siloBuilder
                 .ConfigureServices(services =>
                     services.AddTransient<ICardGrain, CardGrain>())
-                .UseLocalhostClustering()
-                //.AddMemoryGrainStorage("ClusterStateStorage")
+                //.UseLocalhostClustering() // for dev only
                 .AddMemoryGrainStorageAsDefault();
         }
     }
