@@ -6,7 +6,7 @@ using Orleans.TestingHost;
 
 namespace OrleansTestClusterExperiment
 {
-    public class Tests
+    public class HostedTests
     {
         private TestCluster _cluster;
         private IClusterClient _client;
